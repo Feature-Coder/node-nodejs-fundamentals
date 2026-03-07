@@ -1,38 +1,37 @@
-import { mkdir, access, readFile, writeFile } from "fs/promises";
+import fs from "fs/promises";
 import path from "path";
-const restore = async () => {
-  // Write your code here
-  // Read snapshot.json
-  // Treat snapshot.rootPath as metadata only
-  // Recreate directory/file structure in workspace_restored
-  const snapshotPath = path.resolve(import.meta.dirname, "../../snapshot.json");
-  const restoredPath = path.resolve(
-    import.meta.dirname,
-    "../../workspace_restored",
-  );
+import { PATHS } from "../shared/constants.js";
+import { handleFsError } from "../shared/fs-utils.js";
 
+const restore = async () => {
   try {
-    const data = await readFile(snapshotPath, "utf-8");
+    const data = await fs.readFile(PATHS.snapshot, "utf-8");
     const { entries } = JSON.parse(data);
-    const alreadyExists = await access(restoredPath)
+    const alreadyExists = await fs
+      .access(PATHS.restored)
       .then(() => true)
       .catch(() => false);
+
     if (alreadyExists) throw new Error();
 
-    await mkdir(restoredPath);
+    await fs.mkdir(PATHS.restored);
 
     for (const entry of entries) {
-      const fullPath = path.join(restoredPath, entry.path);
+      const fullPath = path.join(PATHS.restored, entry.path);
 
       if (entry.type === "directory") {
-        await mkdir(fullPath, { recursive: true });
+        await fs.mkdir(fullPath, { recursive: true });
       } else {
-        await mkdir(path.dirname(fullPath), { recursive: true });
-        await writeFile(fullPath, Buffer.from(entry.content, "base64"));
+        await fs.mkdir(path.dirname(fullPath), { recursive: true });
+
+        const content = Buffer.from(entry.content, "base64");
+        await fs.writeFile(fullPath, content);
       }
     }
+
+    console.log("Restore completed successfully.");
   } catch (err) {
-    throw new Error("FS operation failed");
+    handleFsError();
   }
 };
 
