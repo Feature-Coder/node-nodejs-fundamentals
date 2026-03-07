@@ -8,4 +8,5 @@ export const PATHS = {
   snapshot: path.join(ROOT, "snapshot.json"),
   parts: path.join(ROOT, "workspace", "parts"),
   merged: path.join(ROOT, "workspace", "merged.txt"),
+  checksums: path.resolve(ROOT, "checksums.json"),
 };
