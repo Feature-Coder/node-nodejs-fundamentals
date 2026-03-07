@@ -7,6 +7,12 @@ export const handleFsError = () => {
   throw new Error("FS operation failed");
 };
 
+export const exists = (p) =>
+  fs
+    .access(p)
+    .then(() => true)
+    .catch(() => false);
+
 export async function scanDir(dir, root = dir, accumulator = []) {
   const entries = await fs.readdir(dir, { withFileTypes: true });
 
@@ -26,17 +32,22 @@ export async function scanDir(dir, root = dir, accumulator = []) {
   return accumulator;
 }
 
-export async function findFilesByExt(directory, ext) {
-  const targetExt = ext.startsWith(".") ? ext : `.${ext}`;
+export async function findFilesByExt(directory, extension) {
+  if (!(await exists(directory))) handleFsError();
 
-  const allItems = await scanDir(directory);
+  const targetExt = extension.startsWith(".") ? extension : `.${extension}`;
+  const allEntries = await scanDir(directory);
 
-  return allItems
-    .filter(
-      (item) =>
-        !item.entry.isDirectory() &&
-        path.extname(item.entry.name) === targetExt,
-    )
-    .map(({ fullPath, relativePath }) => ({ fullPath, relativePath }))
-    .sort((a, b) => a.relativePath.localeCompare(b.relativePath));
+  return allEntries
+    .filter(({ entry }) => {
+      const isFile = !entry.isDirectory();
+      const hasRightExt = path.extname(entry.name) === targetExt;
+      return isFile && hasRightExt;
+    })
+    .map(({ entry, fullPath, relativePath }) => ({
+      fileName: entry.name,
+      fullPath,
+      relativePath,
+    }))
+    .sort((a, b) => a.fileName.localeCompare(b.fileName));
 }

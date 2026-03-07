@@ -7,4 +7,5 @@ export const PATHS = {
   restored: path.join(ROOT, "workspace_restored"),
   snapshot: path.join(ROOT, "snapshot.json"),
   parts: path.join(ROOT, "workspace", "parts"),
+  merged: path.join(ROOT, "workspace", "merged.txt"),
 };

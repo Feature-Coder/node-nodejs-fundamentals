@@ -1,16 +1,13 @@
 import fs from "fs/promises";
 import path from "path";
 import { PATHS } from "../shared/constants.js";
-import { handleFsError } from "../shared/fs-utils.js";
+import { exists, handleFsError } from "../shared/fs-utils.js";
 
 const restore = async () => {
   try {
     const data = await fs.readFile(PATHS.snapshot, "utf-8");
     const { entries } = JSON.parse(data);
-    const alreadyExists = await fs
-      .access(PATHS.restored)
-      .then(() => true)
-      .catch(() => false);
+    const alreadyExists = await exists(PATHS.restored);
 
     if (alreadyExists) throw new Error();
 
