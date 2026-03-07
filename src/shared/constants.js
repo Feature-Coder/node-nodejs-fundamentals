@@ -9,4 +9,6 @@ export const PATHS = {
   parts: path.join(ROOT, "workspace", "parts"),
   merged: path.join(ROOT, "workspace", "merged.txt"),
   checksums: path.resolve(ROOT, "checksums.json"),
+  modules: path.resolve(ROOT, "src", "modules"),
+  plugins: path.resolve(ROOT, "src", "modules", "plugins"),
 };
