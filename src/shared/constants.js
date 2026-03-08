@@ -12,4 +12,6 @@ export const PATHS = {
   modules: path.resolve(ROOT, "src", "modules"),
   plugins: path.resolve(ROOT, "src", "modules", "plugins"),
   dataJSON: path.join(ROOT, "data.json"),
+  sourceTxt: path.join(ROOT, "source.txt"),
+  root: ROOT,
 };
