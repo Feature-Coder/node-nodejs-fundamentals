@@ -11,4 +11,5 @@ export const PATHS = {
   checksums: path.resolve(ROOT, "checksums.json"),
   modules: path.resolve(ROOT, "src", "modules"),
   plugins: path.resolve(ROOT, "src", "modules", "plugins"),
+  dataJSON: path.join(ROOT, "data.json"),
 };
