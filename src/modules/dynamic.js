@@ -1,9 +1,33 @@
+import path from "path";
+import { pathToFileURL } from "url";
+import { PATHS } from "../shared/constants.js";
+import { exists } from "../shared/fs-utils.js";
+
 const dynamic = async () => {
-  // Write your code here
-  // Accept plugin name as CLI argument
-  // Dynamically import plugin from plugins/ directory
-  // Call run() function and print result
-  // Handle missing plugin case
+  const rawPluginName = process.argv[2];
+  const pluginName = rawPluginName?.replace(/\..*$/, "");
+
+  if (!pluginName) {
+    console.error("Plugin not found");
+    process.exit(1);
+  }
+
+  const absolutePath = path.join(PATHS.plugins, `${pluginName}.js`);
+
+  if (!(await exists(absolutePath))) {
+    console.error("Plugin not found");
+    process.exit(1);
+  }
+
+  try {
+    const pluginURL = pathToFileURL(absolutePath).href;
+    const module = await import(pluginURL);
+
+    console.log(module.run());
+  } catch (err) {
+    console.error("Plugin not found");
+    process.exit(1);
+  }
 };
 
 await dynamic();
